@@ -114,6 +114,8 @@ function AppContent() {
     if (!authUser || !user) return;
 
     const dataToUpdate = {
+      id: authUser.id,
+      name: user.name,
       blood_type: onboardingData.bloodType,
       rh_factor: onboardingData.rhFactor,
       height: onboardingData.height,
@@ -126,8 +128,7 @@ function AppContent() {
 
     const { error } = await supabase
       .from('profiles')
-      .update(dataToUpdate)
-      .eq('id', authUser.id);
+      .upsert(dataToUpdate);
 
     if (error) {
       console.error('Error saving onboarding:', error);
@@ -153,6 +154,7 @@ function AppContent() {
 
   const handleUserUpdate = async (newUser: UserProfile & { startWeight?: number }) => {
     const profileToUpdate = {
+        id: authUser?.id,
         name: newUser.name,
         blood_type: newUser.bloodType,
         rh_factor: newUser.rhFactor,
@@ -161,13 +163,13 @@ function AppContent() {
         current_weight: newUser.currentWeight,
         target_weight: newUser.targetWeight,
         weeks_on_diet: newUser.weeksOnDiet,
-        start_weight: user?.startWeight || newUser.currentWeight
+        start_weight: user?.startWeight || newUser.currentWeight,
+        onboarded: true
     };
 
     const { error } = await supabase
       .from('profiles')
-      .update(profileToUpdate)
-      .eq('id', authUser?.id);
+      .upsert(profileToUpdate);
 
     if (error) {
         console.error('Error updating profile:', error);

@@ -69,9 +69,13 @@ export const Profile = ({ user, setUser, darkMode, setDarkMode }: ProfileProps) 
   };
 
   const handleSave = async () => {
+    const userId = (await supabase.auth.getUser()).data.user?.id;
+    if (!userId) return;
+
     const { error } = await supabase
       .from('profiles')
-      .update({
+      .upsert({
+        id: userId,
         name: user.name,
         blood_type: user.bloodType,
         rh_factor: user.rhFactor,
@@ -79,9 +83,9 @@ export const Profile = ({ user, setUser, darkMode, setDarkMode }: ProfileProps) 
         height: user.height,
         current_weight: user.currentWeight,
         target_weight: user.targetWeight,
-        weeks_on_diet: user.weeksOnDiet
-      })
-      .eq('id', (await supabase.auth.getUser()).data.user?.id);
+        weeks_on_diet: user.weeksOnDiet,
+        onboarded: true
+      });
 
     if (error) {
         alert('Erro ao salvar: ' + error.message);
