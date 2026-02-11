@@ -22,24 +22,38 @@ export const Stats = ({ weightHistory, user }: StatsProps) => {
   const currentWeight = user.currentWeight;
   const targetWeight = user.targetWeight;
   
-  const totalEliminated = startWeight - currentWeight;
-  const paramWeight = Math.max(0.1, startWeight - targetWeight);
-  const percentage = Math.min(100, Math.max(0, (totalEliminated / paramWeight) * 100));
-
-  // Generate trend data for the chart
-  const chartData = useMemo(() => {
-    return weightHistory.map((record, index) => {
+  // Generate trend data for the chart with cumulative loss calculation
+  const { chartData, totalEliminatedSum } = useMemo(() => {
+    let cumulativeLoss = 0;
+    
+    const data = weightHistory.map((record, index) => {
       // Linear goal: from startWeight to targetWeight over the history length
       const step = weightHistory.length > 1 ? (startWeight - targetWeight) / (weightHistory.length - 1) : 0;
       const progressiveGoal = Math.max(targetWeight, startWeight - (step * index));
       
+      // Calculate loss since previous entry
+      let pointLoss = 0;
+      if (index === 0) {
+        pointLoss = Math.max(0, startWeight - record.weight);
+      } else {
+        pointLoss = Math.max(0, weightHistory[index - 1].weight - record.weight);
+      }
+      
+      cumulativeLoss += pointLoss;
+      
       return {
         ...record,
-        eliminated: Math.max(0, startWeight - record.weight),
+        eliminated: parseFloat(cumulativeLoss.toFixed(1)),
         goal: parseFloat(progressiveGoal.toFixed(1))
       };
     });
+
+    return { chartData: data, totalEliminatedSum: cumulativeLoss };
   }, [weightHistory, startWeight, targetWeight]);
+
+  const totalEliminated = totalEliminatedSum;
+  const paramWeight = Math.max(0.1, startWeight - targetWeight);
+  const percentage = Math.min(100, Math.max(0, (totalEliminated / paramWeight) * 100));
 
   return (
     <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-500">
