@@ -150,67 +150,6 @@ export const Stats = ({ weightHistory, user }: StatsProps) => {
         </div>
       </div>
 
-      <div className="glass-card p-6 md:p-8 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="p-3 rounded-2xl bg-primary/10 text-primary">
-            <span className="material-icons-round">history</span>
-          </div>
-          <div>
-            <h3 className="font-bold text-lg">Histórico de Registros</h3>
-            <p className="text-slate-500 text-xs">Todos os seus registros de peso</p>
-          </div>
-        </div>
-
-        <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
-          <table className="w-full text-left min-w-[320px]">
-            <thead>
-              <tr className="text-slate-500 text-[10px] font-bold uppercase tracking-wider border-b border-slate-100 dark:border-slate-800">
-                <th className="pb-4 px-2">Data</th>
-                <th className="pb-4 px-2 text-center">Peso</th>
-                <th className="pb-4 px-2 text-center">Eliminado</th>
-                <th className="pb-4 px-2 text-right">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-50 dark:divide-slate-800/50">
-              {[...chartData].reverse().map((record, idx) => (
-                <tr key={idx} className="group hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors">
-                  <td className="py-4 px-2">
-                    <span className="text-xs md:text-sm font-bold text-slate-700 dark:text-slate-300">{record.date}</span>
-                  </td>
-                  <td className="py-4 px-2 text-center">
-                    <span className="text-xs md:text-sm font-black text-slate-800 dark:text-white">{record.weight} <small className="text-[10px] font-normal text-slate-400">kg</small></span>
-                  </td>
-                  <td className="py-4 px-2 text-center">
-                    <span className={`text-xs md:text-sm font-black ${record.eliminated > 0 ? 'text-primary' : (record.eliminated < 0 ? 'text-rose-500' : 'text-slate-400')}`}>
-                      {record.eliminated > 0 ? `-${record.eliminated}` : (record.eliminated < 0 ? `+${Math.abs(record.eliminated)}` : '0')} <small className="text-[10px] font-normal opacity-60">kg</small>
-                    </span>
-                  </td>
-                  <td className="py-4 px-2 text-right">
-                    {record.eliminated > 0 ? (
-                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-emerald-500/10 text-emerald-500 text-[9px] md:text-[10px] font-bold">
-                        <span className="material-icons-round text-xs">trending_down</span>
-                        <span className="hidden md:inline">FOCO</span>
-                        <span className="md:hidden">OK</span>
-                      </span>
-                    ) : record.eliminated < 0 ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-rose-500/10 text-rose-500 text-[9px] md:text-[10px] font-bold">
-                        <span className="material-icons-round text-xs">trending_up</span>
-                        <span className="hidden md:inline">ATENÇÃO</span>
-                        <span className="md:hidden">(!)</span>
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-400 text-[9px] md:text-[10px] font-bold">
-                        <span className="material-icons-round text-xs">horizontal_rule</span>
-                        START
-                      </span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
 
        <div className="glass-card p-8 rounded-3xl text-center">
             <h3 className="font-bold text-lg mb-2">Progresso da Meta</h3>
