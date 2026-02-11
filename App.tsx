@@ -1,0 +1,189 @@
+import React, { useState, useEffect, useMemo } from 'react';
+import { UserProfile, WeightRecord, FoodItem } from './types';
+import { getDietAdvice } from './geminiService';
+import { useStorage } from './src/hooks/useStorage';
+import { supabase } from './src/lib/supabase';
+
+// Components
+import { Navbar } from './src/components/Navbar';
+import { AIAssistant } from './src/components/AIAssistant';
+
+// Pages
+import { Home } from './src/pages/Home';
+import { FoodList } from './src/pages/FoodList';
+import { RecipeList } from './src/pages/RecipeList';
+import { Profile } from './src/pages/Profile';
+import { Stats } from './src/pages/Stats';
+
+import { AdminDashboard } from './src/pages/AdminDashboard';
+import { AuthProvider, useAuth } from './src/contexts/AuthContext';
+import { Login } from './src/pages/Login';
+import { ResetPassword } from './src/pages/ResetPassword';
+
+// --- App Content ---
+
+function AppContent() {
+  const { user: authUser, loading: authLoading, signOut } = useAuth();
+  const [tab, setTab] = useStorage('dietatipo_tab', 'home');
+  const [darkMode, setDarkMode] = useStorage('dietatipo_darkmode', false);
+  const [user, setUser] = useState<(UserProfile & { role?: string }) | null>(null);
+  const [weightHistory, setWeightHistory] = useStorage<WeightRecord[]>('dietatipo_weight_history', [
+    { date: '01/03/2025', weight: 75 },
+    { date: '01/04/2025', weight: 72 },
+    { date: '01/05/2025', weight: 68 }
+  ]);
+
+  const [foodItems, setFoodItems] = useState<FoodItem[]>([]);
+
+  useEffect(() => {
+    const fetchFoods = async () => {
+      const { data, error } = await supabase
+        .from('food_items')
+        .select('*');
+      
+      if (error) {
+        console.error('Error fetching foods:', error);
+      } else if (data) {
+        setFoodItems(data);
+      }
+    };
+    fetchFoods();
+  }, []);
+
+  useEffect(() => {
+    if (authUser) {
+      const fetchProfile = async () => {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', authUser.id)
+          .single();
+
+        if (error && error.code !== 'PGRST116') {
+          console.error('Error fetching profile:', error);
+        } else if (data) {
+          setUser({
+            ...data,
+            bloodType: data.blood_type || 'A',
+            rhFactor: data.rh_factor || '+',
+            weeksOnDiet: 1,
+            currentWeight: 70,
+            role: data.role
+          } as UserProfile & { role: string });
+        } else {
+          // If no profile exists yet, the trigger might be slow, or it's first login
+          // We can create a temporary user object until the trigger finishes or we create it manually
+          setUser({
+            name: authUser.user_metadata?.full_name || 'Usuário',
+            bloodType: 'A',
+            rhFactor: '+',
+            weeksOnDiet: 1,
+            currentWeight: 70,
+            targetWeight: 65,
+            height: 170,
+            role: 'user',
+            avatar: authUser.user_metadata?.avatar_url
+          } as UserProfile & { role: string });
+        }
+      };
+      fetchProfile();
+    }
+  }, [authUser]);
+
+  const handleUserUpdate = (newUser: UserProfile) => {
+    if (user && newUser.currentWeight !== user.currentWeight) {
+      const newRecord: WeightRecord = { 
+        date: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }), 
+        weight: newUser.currentWeight 
+      };
+      setWeightHistory(prev => [...prev, newRecord]);
+    }
+    setUser(newUser);
+  };
+
+  const [chatMessage, setChatMessage] = useState('');
+  const [chatHistory, setChatHistory] = useState<{ role: 'user' | 'bot', text: string }[]>([]);
+  const [isTyping, setIsTyping] = useState(false);
+
+  useEffect(() => {
+    if (darkMode) document.documentElement.classList.add('dark');
+    else document.documentElement.classList.remove('dark');
+  }, [darkMode]);
+
+  const handleSendMessage = async () => {
+    if (!chatMessage.trim() || !user) return;
+    const msg = chatMessage;
+    setChatMessage('');
+    setChatHistory(prev => [...prev, { role: 'user', text: msg }]);
+    setIsTyping(true);
+    
+    const response = await getDietAdvice(user.bloodType, msg);
+    setChatHistory(prev => [...prev, { role: 'bot', text: response || '' }]);
+    setIsTyping(false);
+  };
+
+  const filteredFoods = useMemo(() => {
+    if (!user) return [];
+    return foodItems.map(item => ({
+      ...item,
+      userStatus: item.recommendations[user.bloodType]
+    }));
+  }, [foodItems, user]);
+
+  if (authLoading) return <div className="min-h-screen flex items-center justify-center">Carregando...</div>;
+  
+  // Handle password reset route
+  if (window.location.pathname === '/reset-password') {
+    return <ResetPassword />;
+  }
+
+  if (!authUser) return <Login />;
+  if (!user) return <div className="min-h-screen flex items-center justify-center">Sincronizando Perfil...</div>;
+
+  return (
+    <div className="min-h-screen pb-24 lg:pt-24 lg:pb-8 px-4 lg:px-8 max-w-7xl mx-auto">
+      <Navbar currentTab={tab} setTab={setTab} darkMode={darkMode} setDarkMode={setDarkMode} userAvatar={user.avatar} isAdmin={user.role === 'admin'} onLogout={signOut} />
+      
+      <main className="mt-8 lg:mt-0">
+        {tab === 'home' && (
+          <Home 
+            user={user} 
+            setUser={setUser} 
+            weightHistory={weightHistory} 
+            filteredFoods={filteredFoods} 
+            setTab={setTab} 
+          />
+        )}
+        {tab === 'foods' && <FoodList filteredFoods={filteredFoods} />}
+        {tab === 'recipes' && <RecipeList userBloodType={user.bloodType} />}
+        {tab === 'ai' && (
+          <AIAssistant 
+            chatHistory={chatHistory}
+            chatMessage={chatMessage}
+            setChatMessage={setChatMessage}
+            handleSendMessage={handleSendMessage}
+            isTyping={isTyping}
+            userBloodType={user.bloodType}
+          />
+        )}
+        {tab === 'profile' && (
+           <Profile user={user} setUser={handleUserUpdate} />
+        )}
+        {tab === 'stats' && (
+           <Stats weightHistory={weightHistory} user={user} />
+        )}
+        {tab === 'admin' && user.role === 'admin' && (
+           <AdminDashboard />
+        )}
+      </main>
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
+  );
+}
