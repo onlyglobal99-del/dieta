@@ -28,11 +28,7 @@ function AppContent() {
   const [tab, setTab] = useState('home');
   const [darkMode, setDarkMode] = useStorage('dietatipo_darkmode', false);
   const [user, setUser] = useState<(UserProfile & { role?: string }) | null>(null);
-  const [weightHistory, setWeightHistory] = useStorage<WeightRecord[]>('dietatipo_weight_history', [
-    { date: '01/03/2025', weight: 75 },
-    { date: '01/04/2025', weight: 72 },
-    { date: '01/05/2025', weight: 68 }
-  ]);
+  const [weightHistory, setWeightHistory] = useState<WeightRecord[]>([]);
 
   const [foodItems, setFoodItems] = useState<FoodItem[]>([]);
 
@@ -77,9 +73,18 @@ function AppContent() {
             avatar: data.avatar_url,
             role: data.role
           } as UserProfile & { role: string; startWeight?: number });
+
+          // Fetch Weight History
+          const { data: history, error: historyError } = await supabase
+            .from('weight_records')
+            .select('weight, date')
+            .eq('user_id', authUser.id)
+            .order('created_at', { ascending: true });
+
+          if (!historyError && history) {
+            setWeightHistory(history);
+          }
         } else {
-          // If no profile exists yet, the trigger might be slow, or it's first login
-          // We can create a temporary user object until the trigger finishes or we create it manually
           setUser({
             name: authUser.user_metadata?.full_name || 'Usuário',
             bloodType: 'A',
@@ -94,6 +99,7 @@ function AppContent() {
             role: 'user',
             avatar: authUser.user_metadata?.avatar_url
           } as UserProfile & { role: string; startWeight?: number });
+          setWeightHistory([]);
         }
       };
       fetchProfile();
@@ -122,17 +128,26 @@ function AppContent() {
     if (error) {
       console.error('Error saving onboarding:', error);
     } else {
+      // Create first weight record
+      const initialRecord = {
+        user_id: authUser.id,
+        weight: onboardingData.currentWeight,
+        date: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })
+      };
+      
+      await supabase.from('weight_records').insert(initialRecord);
+
       setUser(prev => prev ? ({
         ...prev,
         ...onboardingData,
         startWeight: onboardingData.currentWeight,
         onboarded: true
       }) : null);
+      setWeightHistory([{ date: initialRecord.date, weight: initialRecord.weight! }]);
     }
   };
 
   const handleUserUpdate = async (newUser: UserProfile & { startWeight?: number }) => {
-    // If startWeight is not set on the server yet, we should set it during the first save
     const profileToUpdate = {
         name: newUser.name,
         blood_type: newUser.bloodType,
@@ -142,7 +157,7 @@ function AppContent() {
         current_weight: newUser.currentWeight,
         target_weight: newUser.targetWeight,
         weeks_on_diet: newUser.weeksOnDiet,
-        start_weight: user?.startWeight || newUser.currentWeight // Persist current start weight or set it now
+        start_weight: user?.startWeight || newUser.currentWeight
     };
 
     const { error } = await supabase
@@ -155,11 +170,15 @@ function AppContent() {
     }
 
     if (user && newUser.currentWeight !== user.currentWeight) {
-      const newRecord: WeightRecord = { 
-        date: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }), 
-        weight: newUser.currentWeight 
+      const date = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      const newRecord = { 
+        user_id: authUser?.id,
+        weight: newUser.currentWeight,
+        date
       };
-      setWeightHistory(prev => [...prev, newRecord]);
+      
+      await supabase.from('weight_records').insert(newRecord);
+      setWeightHistory(prev => [...prev, { date, weight: newUser.currentWeight }]);
     }
     setUser(newUser);
   };
