@@ -72,6 +72,8 @@ function AppContent() {
             targetWeight: data.target_weight || 65,
             height: data.height || 1.70,
             startWeight: data.start_weight || data.current_weight || 70,
+            weeksOnDiet: data.weeks_on_diet || 1,
+            dietDuration: data.diet_duration || 4,
             onboarded: data.onboarded || false,
             avatar: data.avatar_url,
             role: data.role
@@ -84,6 +86,7 @@ function AppContent() {
             bloodType: 'A',
             rhFactor: '+',
             weeksOnDiet: 1,
+            dietDuration: 4,
             currentWeight: 70,
             targetWeight: 65,
             height: 1.70,
@@ -108,6 +111,7 @@ function AppContent() {
       current_weight: onboardingData.currentWeight,
       target_weight: onboardingData.targetWeight,
       start_weight: onboardingData.currentWeight,
+      diet_duration: onboardingData.dietDuration,
       onboarded: true
     };
 

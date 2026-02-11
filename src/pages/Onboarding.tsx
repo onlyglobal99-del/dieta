@@ -15,10 +15,11 @@ export const Onboarding = ({ user, onComplete }: OnboardingProps) => {
     height: user.height || 1.70,
     currentWeight: user.currentWeight || 70,
     targetWeight: user.targetWeight || 65,
+    dietDuration: user.dietDuration || 4,
   });
 
   const nextStep = () => {
-    if (step < 5) setStep(step + 1);
+    if (step < 6) setStep(step + 1);
     else onComplete(data);
   };
 
@@ -55,6 +56,11 @@ export const Onboarding = ({ user, onComplete }: OnboardingProps) => {
       title: 'Sua Meta',
       desc: 'Onde você quer chegar?',
       icon: 'ads_click',
+    },
+    {
+      title: 'Duração do Foco',
+      desc: 'Quantas semanas deseja manter o plano?',
+      icon: 'calendar_month',
     }
   ];
 
@@ -67,7 +73,7 @@ export const Onboarding = ({ user, onComplete }: OnboardingProps) => {
       <div className="w-full max-w-xl relative">
         {/* Progress Bar */}
         <div className="flex justify-center gap-2 mb-8">
-          {[1, 2, 3, 4, 5].map(s => (
+          {[1, 2, 3, 4, 5, 6].map(s => (
             <div 
               key={s} 
               className={`h-1.5 rounded-full transition-all duration-500 ${s <= step ? 'w-8 bg-primary shadow-sm shadow-primary/20' : 'w-4 bg-slate-200 dark:bg-slate-800'}`}
@@ -179,6 +185,23 @@ export const Onboarding = ({ user, onComplete }: OnboardingProps) => {
                 <div className="h-0.5 bg-slate-200 dark:bg-slate-800 w-full mt-2"></div>
               </div>
             )}
+
+            {step === 6 && (
+              <div className="w-full max-w-sm mx-auto space-y-6">
+                <div className="flex justify-center gap-3 flex-wrap">
+                  {[1, 2, 4, 8, 12].map(weeks => (
+                    <button
+                      key={weeks}
+                      onClick={() => updateData('dietDuration', weeks)}
+                      className={`px-6 py-4 rounded-2xl font-bold transition-all ${data.dietDuration === weeks ? 'bg-primary text-white shadow-xl scale-110' : 'bg-slate-100 dark:bg-slate-800 text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
+                    >
+                      {weeks} {weeks === 1 ? 'Semana' : 'Semanas'}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-center text-xs text-slate-400 italic font-medium">Você pode alterar isso a qualquer momento no perfil.</p>
+              </div>
+            )}
           </div>
 
           <div className="mt-12 flex gap-4">
@@ -194,9 +217,9 @@ export const Onboarding = ({ user, onComplete }: OnboardingProps) => {
               onClick={nextStep}
               className="flex-[2] py-4 px-6 rounded-2xl font-black bg-primary text-white shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all active:scale-95 flex items-center justify-center gap-2"
             >
-              {step === 5 ? 'Finalizar Configuração' : 'Continuar'}
+              {step === 6 ? 'Iniciar Jornada' : 'Continuar'}
               <span className="material-icons-round text-xl">
-                {step === 5 ? 'check_circle' : 'arrow_forward'}
+                {step === 6 ? 'check_circle' : 'arrow_forward'}
               </span>
             </button>
           </div>
