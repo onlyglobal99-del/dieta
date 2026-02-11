@@ -24,7 +24,7 @@ import { ResetPassword } from './src/pages/ResetPassword';
 
 function AppContent() {
   const { user: authUser, loading: authLoading, signOut } = useAuth();
-  const [tab, setTab] = useStorage('dietatipo_tab', 'home');
+  const [tab, setTab] = useState('home');
   const [darkMode, setDarkMode] = useStorage('dietatipo_darkmode', false);
   const [user, setUser] = useState<(UserProfile & { role?: string }) | null>(null);
   const [weightHistory, setWeightHistory] = useStorage<WeightRecord[]>('dietatipo_weight_history', [

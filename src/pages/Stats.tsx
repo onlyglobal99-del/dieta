@@ -59,24 +59,24 @@ export const Stats = ({ weightHistory, user }: StatsProps) => {
     <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-500">
       <h1 className="text-3xl font-bold">Sua Evolução</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6">
-        <div className="glass-card p-6 rounded-3xl flex flex-col justify-between">
-          <span className="text-slate-500 text-[10px] font-bold uppercase tracking-wider">Peso de Partida</span>
-          <span className="text-2xl font-black text-slate-800 dark:text-white">{startWeight} <small className="text-xs font-normal text-slate-400 italic">kg</small></span>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
+        <div className="glass-card p-4 md:p-6 rounded-3xl flex flex-col justify-between">
+          <span className="text-slate-500 text-[9px] md:text-[10px] font-bold uppercase tracking-wider">Partida</span>
+          <span className="text-xl md:text-2xl font-black text-slate-800 dark:text-white">{startWeight} <small className="text-[10px] font-normal text-slate-400 italic">kg</small></span>
         </div>
-        <div className="glass-card p-6 rounded-3xl flex flex-col justify-between border-primary/20 bg-primary/5">
-          <span className="text-primary-dark text-[10px] font-bold uppercase tracking-wider">Eliminado</span>
-          <span className="text-2xl font-black text-primary">
-            {totalEliminated > 0 ? `-${totalEliminated.toFixed(1)}` : '0'} <small className="text-xs font-normal opacity-60 italic">kg</small>
+        <div className="glass-card p-4 md:p-6 rounded-3xl flex flex-col justify-between border-primary/20 bg-primary/5">
+          <span className="text-primary-dark text-[9px] md:text-[10px] font-bold uppercase tracking-wider">Eliminado</span>
+          <span className="text-xl md:text-2xl font-black text-primary">
+            {totalEliminated > 0 ? `-${totalEliminated.toFixed(1)}` : '0'} <small className="text-[10px] font-normal opacity-60 italic">kg</small>
           </span>
         </div>
-        <div className="glass-card p-6 rounded-3xl flex flex-col justify-between bg-primary/10 border-primary/20">
-          <span className="text-primary-dark text-[10px] font-bold uppercase tracking-wider">Peso Atual</span>
-          <span className="text-2xl font-black text-primary">{currentWeight} <small className="text-xs font-normal text-primary/60 italic">kg</small></span>
+        <div className="glass-card p-4 md:p-6 rounded-3xl flex flex-col justify-between bg-primary/10 border-primary/20">
+          <span className="text-primary-dark text-[9px] md:text-[10px] font-bold uppercase tracking-wider">Peso Atual</span>
+          <span className="text-xl md:text-2xl font-black text-primary">{currentWeight} <small className="text-[10px] font-normal text-primary/60 italic">kg</small></span>
         </div>
-        <div className="glass-card p-6 rounded-3xl flex flex-col justify-between">
-          <span className="text-slate-500 text-[10px] font-bold uppercase tracking-wider">Sua Meta</span>
-          <span className="text-2xl font-black text-slate-800 dark:text-white">{targetWeight} <small className="text-xs font-normal text-slate-400 italic">kg</small></span>
+        <div className="glass-card p-4 md:p-6 rounded-3xl flex flex-col justify-between">
+          <span className="text-slate-500 text-[9px] md:text-[10px] font-bold uppercase tracking-wider">Sua Meta</span>
+          <span className="text-xl md:text-2xl font-black text-slate-800 dark:text-white">{targetWeight} <small className="text-[10px] font-normal text-slate-400 italic">kg</small></span>
         </div>
       </div>
 
