@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 
 interface ChatMessage {
   role: 'user' | 'bot';
@@ -21,7 +21,14 @@ export const AIAssistant = ({
   handleSendMessage, 
   isTyping, 
   userBloodType 
-}: AIAssistantProps) => (
+}: AIAssistantProps) => {
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatHistory, isTyping]);
+
+  return (
   <div className="flex flex-col h-[70vh] glass-card rounded-3xl overflow-hidden animate-in zoom-in duration-300">
     <div className="bg-navy-deep p-4 text-white flex items-center gap-3">
       <span className="material-icons-round text-primary">auto_awesome</span>
@@ -53,6 +60,7 @@ export const AIAssistant = ({
           </div>
         </div>
       )}
+      <div ref={chatEndRef} />
     </div>
 
     <div className="p-4 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 flex gap-2">
@@ -71,4 +79,5 @@ export const AIAssistant = ({
       </button>
     </div>
   </div>
-);
+  );
+};

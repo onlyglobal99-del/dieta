@@ -40,6 +40,14 @@ export const Navbar = ({ currentTab, setTab, darkMode, setDarkMode, userAvatar, 
       {isAdmin && <TabButton icon="admin_panel_settings" label="Admin" active={currentTab === 'admin'} onClick={() => setTab('admin')} />}
       
       <button 
+        onClick={onLogout}
+        className="flex flex-col lg:hidden items-center gap-1 text-slate-400 dark:text-slate-500 hover:text-rose-500 transition-all"
+      >
+        <span className="material-icons-round">logout</span>
+        <span className="text-[10px] font-bold uppercase">Sair</span>
+      </button>
+      
+      <button 
         onClick={() => setDarkMode(!darkMode)}
         className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors hidden lg:block"
       >

@@ -61,10 +61,22 @@ export const Home = ({ user, setUser, weightHistory, filteredFoods, setTab }: Ho
           <div className="space-y-4">
             <div className="flex justify-between text-sm font-semibold">
               <span className="text-rose-500">Tipo {user.bloodType}: {user.weeksOnDiet} semanas</span>
-              <span className="text-slate-400">65% completo</span>
+              <span className="text-slate-400">{(() => {
+                const startWeight = weightHistory.length > 0 ? weightHistory[0].weight : user.currentWeight;
+                const totalToLose = Math.max(0.1, startWeight - user.targetWeight);
+                const lostSoFar = startWeight - user.currentWeight;
+                const percentage = Math.min(100, Math.max(0, (lostSoFar / totalToLose) * 100));
+                return Math.round(percentage);
+              })()}% completo</span>
             </div>
             <div className="w-full bg-slate-100 dark:bg-slate-800 h-4 rounded-full overflow-hidden">
-              <div className="bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 h-full rounded-full transition-all duration-1000" style={{ width: '65%' }}></div>
+              <div className="bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 h-full rounded-full transition-all duration-1000" style={{ width: `${(() => {
+                const startWeight = weightHistory.length > 0 ? weightHistory[0].weight : user.currentWeight;
+                const totalToLose = Math.max(0.1, startWeight - user.targetWeight);
+                const lostSoFar = startWeight - user.currentWeight;
+                const percentage = Math.min(100, Math.max(0, (lostSoFar / totalToLose) * 100));
+                return percentage;
+              })()}%` }}></div>
             </div>
             <p className="text-sm text-slate-500 italic">"Seu tipo sanguíneo determina sua dieta ideal para melhores resultados."</p>
           </div>

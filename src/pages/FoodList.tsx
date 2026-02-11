@@ -71,7 +71,7 @@ export const FoodList = ({ filteredFoods }: FoodListProps) => {
         ))}
         {displayFoods.length === 0 && (
             <div className="col-span-full text-center py-12 text-slate-400">
-                Nehum alimento encontrado.
+                Nenhum alimento encontrado.
             </div>
         )}
       </div>
