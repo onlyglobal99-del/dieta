@@ -87,6 +87,7 @@ export const Home = ({ user, setUser, weightHistory, filteredFoods, setTab }: Ho
                 </defs>
                 <CartesianGrid strokeDasharray="5 5" stroke="rgba(255,255,255,0.05)" vertical={false} />
                 <Area 
+                  name="Peso"
                   type="monotone" 
                   dataKey="weight" 
                   stroke="#66D2B3" 
