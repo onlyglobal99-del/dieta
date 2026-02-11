@@ -70,9 +70,10 @@ function AppContent() {
             currentWeight: data.current_weight || 70,
             targetWeight: data.target_weight || 65,
             height: data.height || 1.70,
+            startWeight: data.start_weight || data.current_weight || 70,
             avatar: data.avatar_url,
             role: data.role
-          } as UserProfile & { role: string });
+          } as UserProfile & { role: string; startWeight?: number });
         } else {
           // If no profile exists yet, the trigger might be slow, or it's first login
           // We can create a temporary user object until the trigger finishes or we create it manually
@@ -84,16 +85,39 @@ function AppContent() {
             currentWeight: 70,
             targetWeight: 65,
             height: 1.70,
+            startWeight: 70,
             role: 'user',
             avatar: authUser.user_metadata?.avatar_url
-          } as UserProfile & { role: string });
+          } as UserProfile & { role: string; startWeight?: number });
         }
       };
       fetchProfile();
     }
   }, [authUser]);
 
-  const handleUserUpdate = (newUser: UserProfile) => {
+  const handleUserUpdate = async (newUser: UserProfile & { startWeight?: number }) => {
+    // If startWeight is not set on the server yet, we should set it during the first save
+    const profileToUpdate = {
+        name: newUser.name,
+        blood_type: newUser.bloodType,
+        rh_factor: newUser.rhFactor,
+        avatar_url: newUser.avatar,
+        height: newUser.height,
+        current_weight: newUser.currentWeight,
+        target_weight: newUser.targetWeight,
+        weeks_on_diet: newUser.weeksOnDiet,
+        start_weight: user?.startWeight || newUser.currentWeight // Persist current start weight or set it now
+    };
+
+    const { error } = await supabase
+      .from('profiles')
+      .update(profileToUpdate)
+      .eq('id', authUser?.id);
+
+    if (error) {
+        console.error('Error updating profile:', error);
+    }
+
     if (user && newUser.currentWeight !== user.currentWeight) {
       const newRecord: WeightRecord = { 
         date: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }), 

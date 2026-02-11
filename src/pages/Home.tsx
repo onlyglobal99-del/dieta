@@ -71,36 +71,57 @@ export const Home = ({ user, setUser, weightHistory, filteredFoods, setTab }: Ho
         </div>
 
         {/* Progress Card */}
-        <div className="flex-1 glass-card p-8 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800">
-          <h2 className="text-xl font-bold mb-6">Progresso de Peso</h2>
+        <div className="flex-1 bg-navy-deep p-8 rounded-3xl shadow-2xl border border-white/5 text-white">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold">Progresso de Peso</h2>
+            <span className="material-icons-round text-primary opacity-50">show_chart</span>
+          </div>
           <div className="h-48 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={weightHistory}>
+              <AreaChart data={weightHistory} margin={{ top: 10, right: 0, left: -40, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorWeight" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#66D2B3" stopOpacity={0.3}/>
                     <stop offset="95%" stopColor="#66D2B3" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <Area type="monotone" dataKey="weight" stroke="#66D2B3" strokeWidth={3} fillOpacity={1} fill="url(#colorWeight)" />
+                <CartesianGrid strokeDasharray="5 5" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                <Area 
+                  type="monotone" 
+                  dataKey="weight" 
+                  stroke="#66D2B3" 
+                  strokeWidth={3} 
+                  fillOpacity={1} 
+                  fill="url(#colorWeight)" 
+                  animationDuration={1500}
+                />
                 <XAxis dataKey="date" hide />
                 <YAxis domain={['dataMin - 5', 'dataMax + 5']} hide />
-                <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }} />
+                <Tooltip 
+                  contentStyle={{ 
+                    borderRadius: '16px', 
+                    border: '1px solid rgba(255,255,255,0.1)', 
+                    boxShadow: '0 20px 25px -5px rgba(0,0,0,0.3)',
+                    backgroundColor: '#1a2333',
+                    color: '#fff'
+                  }} 
+                  itemStyle={{ color: '#66D2B3', fontWeight: 'bold' }}
+                />
               </AreaChart>
             </ResponsiveContainer>
           </div>
-          <div className="grid grid-cols-3 gap-2 text-center pt-4 border-t dark:border-slate-800 mt-4">
+          <div className="grid grid-cols-3 gap-2 text-center pt-4 border-t border-white/10 mt-4">
             <div>
-              <p className="text-[10px] uppercase font-bold text-slate-400">Inicial</p>
-              <p className="font-bold">75 kg</p>
+              <p className="text-[10px] uppercase font-bold text-slate-500">Inicial</p>
+              <p className="font-bold text-white">{weightHistory.length > 0 ? weightHistory[0].weight : (user.currentWeight || '--')} <small className="text-[8px] opacity-40">kg</small></p>
             </div>
             <div>
-              <p className="text-[10px] uppercase font-bold text-slate-400">Atual</p>
-              <p className="font-bold text-primary">68 kg</p>
+              <p className="text-[10px] uppercase font-bold text-slate-500">Atual</p>
+              <p className="font-bold text-primary">{user.currentWeight || '--'} <small className="text-[8px] opacity-40">kg</small></p>
             </div>
             <div>
-              <p className="text-[10px] uppercase font-bold text-slate-400">Meta</p>
-              <p className="font-bold">65 kg</p>
+              <p className="text-[10px] uppercase font-bold text-slate-500">Meta</p>
+              <p className="font-bold text-white">{user.targetWeight || '--'} <small className="text-[8px] opacity-40">kg</small></p>
             </div>
           </div>
         </div>

@@ -129,7 +129,7 @@ export const Profile = ({ user, setUser, darkMode, setDarkMode }: ProfileProps) 
         <h2 className="text-xl font-bold border-b border-slate-100 dark:border-slate-800 pb-4">Dados Pessoais</h2>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
+          <div className="space-y-2 md:col-span-2">
             <label className="text-sm font-bold text-slate-500 uppercase">Nome</label>
             <input 
               type="text" 
@@ -166,28 +166,30 @@ export const Profile = ({ user, setUser, darkMode, setDarkMode }: ProfileProps) 
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-bold text-slate-500 uppercase">Altura</label>
-            <input 
-              type="text" 
-              value={user.height || ''}
-              onChange={(e) => {
-                const val = e.target.value.replace(',', '.');
-                handleChange('height', parseFloat(val) || 0);
-              }}
-              placeholder="Ex: 1.70 ou 1,70"
-              className="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 focus:ring-primary focus:border-primary font-semibold"
-            />
-          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-slate-500 uppercase">Altura</label>
+              <input 
+                type="text" 
+                value={user.height || ''}
+                onChange={(e) => {
+                  const val = e.target.value.replace(',', '.');
+                  handleChange('height', parseFloat(val) || 0);
+                }}
+                placeholder="Ex: 1.70"
+                className="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 focus:ring-primary focus:border-primary font-semibold"
+              />
+            </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-bold text-slate-500 uppercase">Semanas na Dieta</label>
-            <input 
-              type="number" 
-              value={user.weeksOnDiet}
-              onChange={(e) => handleChange('weeksOnDiet', parseInt(e.target.value) || 0)}
-              className="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 focus:ring-primary focus:border-primary font-semibold"
-            />
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-slate-500 uppercase">Semanas</label>
+              <input 
+                type="number" 
+                value={user.weeksOnDiet}
+                onChange={(e) => handleChange('weeksOnDiet', parseInt(e.target.value) || 0)}
+                className="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 focus:ring-primary focus:border-primary font-semibold"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -222,11 +224,14 @@ export const Profile = ({ user, setUser, darkMode, setDarkMode }: ProfileProps) 
             <label className="text-sm font-bold text-slate-500 uppercase">Peso Atual (kg)</label>
             <div className="relative">
               <input 
-                type="number" 
-                value={user.currentWeight}
-                onChange={(e) => handleChange('currentWeight', parseFloat(e.target.value) || 0)}
+                type="text" 
+                value={user.currentWeight || ''}
+                onChange={(e) => {
+                  const val = e.target.value.replace(',', '.');
+                  handleChange('currentWeight', parseFloat(val) || 0);
+                }}
+                placeholder="Ex: 75.5"
                 className="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 focus:ring-primary focus:border-primary font-bold text-lg text-primary"
-                step="0.1"
               />
               <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">kg</span>
             </div>
@@ -236,11 +241,14 @@ export const Profile = ({ user, setUser, darkMode, setDarkMode }: ProfileProps) 
             <label className="text-sm font-bold text-slate-500 uppercase">Meta de Peso (kg)</label>
             <div className="relative">
               <input 
-                type="number" 
-                value={user.targetWeight}
-                onChange={(e) => handleChange('targetWeight', parseFloat(e.target.value) || 0)}
+                type="text" 
+                value={user.targetWeight || ''}
+                onChange={(e) => {
+                  const val = e.target.value.replace(',', '.');
+                  handleChange('targetWeight', parseFloat(val) || 0);
+                }}
+                placeholder="Ex: 65.0"
                 className="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 focus:ring-primary focus:border-primary font-bold text-lg"
-                step="0.1"
               />
               <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">kg</span>
             </div>
