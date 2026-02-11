@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { AuthProvider, useAuth } from './src/contexts/AuthContext.tsx';
 import { UserProfile, WeightRecord, FoodItem } from './types';
 import { getDietAdvice } from './geminiService';
 import { useStorage } from './src/hooks/useStorage';
@@ -16,7 +17,6 @@ import { Profile } from './src/pages/Profile';
 import { Stats } from './src/pages/Stats';
 
 import { AdminDashboard } from './src/pages/AdminDashboard';
-import { AuthProvider, useAuth } from './src/contexts/AuthContext';
 import { Login } from './src/pages/Login';
 import { ResetPassword } from './src/pages/ResetPassword';
 
