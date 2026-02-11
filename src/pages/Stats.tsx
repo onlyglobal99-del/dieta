@@ -22,36 +22,27 @@ export const Stats = ({ weightHistory, user }: StatsProps) => {
   const currentWeight = user.currentWeight;
   const targetWeight = user.targetWeight;
   
-  // Generate trend data for the chart with cumulative loss calculation
-  const { chartData, totalEliminatedSum } = useMemo(() => {
-    let cumulativeLoss = 0;
-    
-    const data = weightHistory.map((record, index) => {
+  // Generate trend data for the chart with net loss calculation
+  const chartData = useMemo(() => {
+    return weightHistory.map((record, index) => {
       // Linear goal: from startWeight to targetWeight over the history length
       const step = weightHistory.length > 1 ? (startWeight - targetWeight) / (weightHistory.length - 1) : 0;
       const progressiveGoal = Math.max(targetWeight, startWeight - (step * index));
       
-      // Calculate loss since previous entry
-      let pointLoss = 0;
-      if (index === 0) {
-        pointLoss = Math.max(0, startWeight - record.weight);
-      } else {
-        pointLoss = Math.max(0, weightHistory[index - 1].weight - record.weight);
-      }
-      
-      cumulativeLoss += pointLoss;
+      // Calculate net loss relative to starting weight
+      const eliminated = parseFloat((startWeight - record.weight).toFixed(1));
       
       return {
         ...record,
-        eliminated: parseFloat(cumulativeLoss.toFixed(1)),
+        eliminated,
         goal: parseFloat(progressiveGoal.toFixed(1))
       };
     });
-
-    return { chartData: data, totalEliminatedSum: cumulativeLoss };
   }, [weightHistory, startWeight, targetWeight]);
 
-  const totalEliminated = totalEliminatedSum;
+  const totalEliminated = weightHistory.length > 0 
+    ? parseFloat((startWeight - weightHistory[weightHistory.length - 1].weight).toFixed(1)) 
+    : 0;
   const paramWeight = Math.max(0.1, startWeight - targetWeight);
   const percentage = Math.min(100, Math.max(0, (totalEliminated / paramWeight) * 100));
 

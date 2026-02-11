@@ -111,14 +111,25 @@ export const Home = ({ user, setUser, weightHistory, filteredFoods, setTab }: Ho
               </AreaChart>
             </ResponsiveContainer>
           </div>
-          <div className="grid grid-cols-3 gap-2 text-center pt-4 border-t border-white/10 mt-4">
+          <div className="grid grid-cols-4 gap-2 text-center pt-4 border-t border-white/10 mt-4">
             <div>
               <p className="text-[10px] uppercase font-bold text-slate-500">Inicial</p>
               <p className="font-bold text-white">{weightHistory.length > 0 ? weightHistory[0].weight : (user.currentWeight || '--')} <small className="text-[8px] opacity-40">kg</small></p>
             </div>
             <div>
+              <p className="text-[10px] uppercase font-bold text-slate-500">Eliminado</p>
+              <div className="flex items-center justify-center gap-1">
+                {((user.startWeight || (weightHistory.length > 0 ? weightHistory[0].weight : user.currentWeight)) - user.currentWeight) > 0 && (
+                  <span className="material-icons-round text-[10px] text-primary">trending_down</span>
+                )}
+                <p className="font-bold text-primary">
+                  {Math.max(0, (user.startWeight || (weightHistory.length > 0 ? weightHistory[0].weight : user.currentWeight)) - user.currentWeight).toFixed(1)} <small className="text-[8px] opacity-40">kg</small>
+                </p>
+              </div>
+            </div>
+            <div>
               <p className="text-[10px] uppercase font-bold text-slate-500">Atual</p>
-              <p className="font-bold text-primary">{user.currentWeight || '--'} <small className="text-[8px] opacity-40">kg</small></p>
+              <p className="font-bold text-white">{user.currentWeight || '--'} <small className="text-[8px] opacity-40">kg</small></p>
             </div>
             <div>
               <p className="text-[10px] uppercase font-bold text-slate-500">Meta</p>

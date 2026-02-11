@@ -57,4 +57,5 @@ export interface UserProfile {
   dietDuration: number;
   onboarded: boolean;
   avatar?: string;
+  startWeight?: number;
 }
