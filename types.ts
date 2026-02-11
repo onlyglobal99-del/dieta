@@ -54,5 +54,6 @@ export interface UserProfile {
   targetWeight: number;
   height: number;
   weeksOnDiet: number;
+  onboarded: boolean;
   avatar?: string;
 }

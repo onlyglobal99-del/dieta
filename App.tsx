@@ -18,6 +18,7 @@ import { Stats } from './src/pages/Stats';
 
 import { AdminDashboard } from './src/pages/AdminDashboard';
 import { Login } from './src/pages/Login';
+import { Onboarding } from './src/pages/Onboarding';
 import { ResetPassword } from './src/pages/ResetPassword';
 
 // --- App Content ---
@@ -71,6 +72,7 @@ function AppContent() {
             targetWeight: data.target_weight || 65,
             height: data.height || 1.70,
             startWeight: data.start_weight || data.current_weight || 70,
+            onboarded: data.onboarded || false,
             avatar: data.avatar_url,
             role: data.role
           } as UserProfile & { role: string; startWeight?: number });
@@ -86,6 +88,7 @@ function AppContent() {
             targetWeight: 65,
             height: 1.70,
             startWeight: 70,
+            onboarded: false,
             role: 'user',
             avatar: authUser.user_metadata?.avatar_url
           } as UserProfile & { role: string; startWeight?: number });
@@ -94,6 +97,36 @@ function AppContent() {
       fetchProfile();
     }
   }, [authUser]);
+
+  const handleOnboardingComplete = async (onboardingData: Partial<UserProfile>) => {
+    if (!authUser || !user) return;
+
+    const dataToUpdate = {
+      blood_type: onboardingData.bloodType,
+      rh_factor: onboardingData.rhFactor,
+      height: onboardingData.height,
+      current_weight: onboardingData.currentWeight,
+      target_weight: onboardingData.targetWeight,
+      start_weight: onboardingData.currentWeight,
+      onboarded: true
+    };
+
+    const { error } = await supabase
+      .from('profiles')
+      .update(dataToUpdate)
+      .eq('id', authUser.id);
+
+    if (error) {
+      console.error('Error saving onboarding:', error);
+    } else {
+      setUser(prev => prev ? ({
+        ...prev,
+        ...onboardingData,
+        startWeight: onboardingData.currentWeight,
+        onboarded: true
+      }) : null);
+    }
+  };
 
   const handleUserUpdate = async (newUser: UserProfile & { startWeight?: number }) => {
     // If startWeight is not set on the server yet, we should set it during the first save
@@ -166,6 +199,11 @@ function AppContent() {
 
   if (!authUser) return <Login />;
   if (!user) return <div className="min-h-screen flex items-center justify-center">Sincronizando Perfil...</div>;
+
+  // Show Onboarding if user exists but hasn't completed it
+  if (!user.onboarded) {
+    return <Onboarding user={user} onComplete={handleOnboardingComplete} />;
+  }
 
   return (
     <div className="min-h-screen pb-24 lg:pt-24 lg:pb-8 px-4 lg:px-8 max-w-7xl mx-auto">
