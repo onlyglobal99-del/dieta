@@ -35,7 +35,7 @@ export const Onboarding = ({ user, onComplete }: OnboardingProps) => {
     {
       title: 'Bem-vindo(a)!',
       desc: 'Vamos configurar seu plano personalizado em poucos segundos.',
-      icon: 'sparkles',
+      icon: 'auto_awesome',
     },
     {
       title: 'Seu Tipo Sanguíneo',
@@ -83,8 +83,8 @@ export const Onboarding = ({ user, onComplete }: OnboardingProps) => {
 
         <div className="glass-card p-8 md:p-12 rounded-[2.5rem] shadow-2xl border border-white/40 dark:border-white/5 animate-in fade-in zoom-in-95 duration-500">
           <div className="text-center mb-10">
-            <div className="w-20 h-20 bg-primary/10 text-primary rounded-[2rem] flex items-center justify-center mx-auto mb-6 shadow-inner tracking-tighter">
-              <span className="material-icons-round text-4xl">{steps[step-1].icon}</span>
+            <div className="w-20 h-20 bg-primary/10 text-primary rounded-[2rem] flex items-center justify-center mx-auto mb-6 shadow-inner">
+              <span className="material-icons-round text-4xl leading-none">{steps[step-1].icon}</span>
             </div>
             <h1 className="text-3xl font-black text-slate-800 dark:text-white mb-2">{steps[step-1].title}</h1>
             <p className="text-slate-500 dark:text-slate-400 font-medium">{steps[step-1].desc}</p>

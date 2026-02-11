@@ -16,7 +16,7 @@ const RecommendationSection = ({ title, status, foods, icon, color }: Recommenda
       <span className={`material-icons-round ${color}`}>{icon}</span>
       <h3 className="font-bold text-slate-700 dark:text-slate-300">{title}</h3>
     </div>
-    <div className="grid grid-cols-4 md:grid-cols-2 lg:grid-cols-2 gap-2">
+    <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-2">
       {foods.slice(0, 4).map(food => (
         <div key={food.id} className="relative group cursor-pointer">
           <img src={food.image} className="w-full h-16 object-cover rounded-xl border dark:border-slate-700" alt={food.name} />

@@ -105,6 +105,10 @@ export const Stats = ({ weightHistory, user }: StatsProps) => {
               <Tooltip 
                 content={({ active, payload, label }) => {
                   if (active && payload && payload.length) {
+                    const weightData = payload.find(p => p.dataKey === 'weight');
+                    const weightValue = weightData ? weightData.value : 0;
+                    const eliminatedValue = weightData?.payload?.eliminated || 0;
+
                     return (
                       <div className="bg-navy-deep border border-white/10 p-4 rounded-2xl shadow-2xl backdrop-blur-xl">
                         <p className="text-slate-400 text-[10px] font-bold mb-3 uppercase tracking-tighter">{label}</p>
@@ -112,13 +116,13 @@ export const Stats = ({ weightHistory, user }: StatsProps) => {
                             <div className="flex items-center justify-between gap-6">
                                 <span className="text-slate-500 text-[10px] font-bold uppercase">Peso</span>
                                 <p className="text-white font-black text-xl leading-none">
-                                    {payload[0].value} <small className="text-[10px] font-medium text-slate-500">kg</small>
+                                    {weightValue} <small className="text-[10px] font-medium text-slate-500">kg</small>
                                 </p>
                             </div>
                             <div className="bg-emerald-500/10 border border-emerald-500/20 px-3 py-2 rounded-xl flex items-center justify-between gap-4">
                                 <span className="text-emerald-500 text-[10px] font-black uppercase">Eliminado</span>
                                 <span className="text-emerald-500 font-black text-sm">
-                                    -{payload[0].payload.eliminated.toFixed(1)} kg
+                                    {eliminatedValue > 0 ? `-${eliminatedValue.toFixed(1)}` : (eliminatedValue < 0 ? `+${Math.abs(eliminatedValue).toFixed(1)}` : '0')} kg
                                 </span>
                             </div>
                         </div>
@@ -129,6 +133,7 @@ export const Stats = ({ weightHistory, user }: StatsProps) => {
                 }}
               />
               <Line 
+                name="Meta"
                 type="monotone" 
                 dataKey="goal" 
                 stroke="#334155" 
@@ -138,6 +143,7 @@ export const Stats = ({ weightHistory, user }: StatsProps) => {
                 activeDot={false}
               />
               <Line 
+                name="Peso"
                 type="monotone" 
                 dataKey="weight" 
                 stroke="#66D2B3" 
