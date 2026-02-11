@@ -25,10 +25,11 @@ import { ResetPassword } from './src/pages/ResetPassword';
 
 function AppContent() {
   const { user: authUser, loading: authLoading, signOut } = useAuth();
-  const [tab, setTab] = useState('home');
+  const [tab, setTab] = useStorage('dietatipo_current_tab', 'home');
   const [darkMode, setDarkMode] = useStorage('dietatipo_darkmode', false);
-  const [user, setUser] = useState<(UserProfile & { role?: string }) | null>(null);
+  const [user, setUser] = useState<(UserProfile & { role?: string; startWeight?: number }) | null>(null);
   const [weightHistory, setWeightHistory] = useState<WeightRecord[]>([]);
+  const [profileLoading, setProfileLoading] = useState(true);
 
   const [foodItems, setFoodItems] = useState<FoodItem[]>([]);
 
@@ -49,6 +50,7 @@ function AppContent() {
 
   useEffect(() => {
     if (authUser) {
+      setProfileLoading(true);
       const fetchProfile = async () => {
         const { data, error } = await supabase
           .from('profiles')
@@ -102,7 +104,9 @@ function AppContent() {
           setWeightHistory([]);
         }
       };
-      fetchProfile();
+      fetchProfile().finally(() => setProfileLoading(false));
+    } else {
+      setProfileLoading(false);
     }
   }, [authUser]);
 
@@ -212,7 +216,7 @@ function AppContent() {
     }));
   }, [foodItems, user]);
 
-  if (authLoading) return <div className="min-h-screen flex items-center justify-center">Carregando...</div>;
+  if (authLoading || (authUser && profileLoading)) return <div className="min-h-screen flex items-center justify-center">Carregando...</div>;
   
   // Handle password reset route
   if (window.location.pathname === '/reset-password') {
