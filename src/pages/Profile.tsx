@@ -6,9 +6,11 @@ import { supabase } from '../lib/supabase';
 interface ProfileProps {
   user: UserProfile;
   setUser: (u: UserProfile) => void;
+  darkMode: boolean;
+  setDarkMode: (d: boolean) => void;
 }
 
-export const Profile = ({ user, setUser }: ProfileProps) => {
+export const Profile = ({ user, setUser, darkMode, setDarkMode }: ProfileProps) => {
   const handleChange = (field: keyof UserProfile, value: string | number) => {
     setUser({ ...user, [field]: value });
   };
@@ -18,18 +20,49 @@ export const Profile = ({ user, setUser }: ProfileProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const playSuccessSound = () => {
-    // Using a generic success/celebration sound
     const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3'); 
     audio.volume = 0.5;
     audio.play().catch(e => console.log('Audio play failed', e));
+  };
+
+  const resizeImage = (base64Str: string): Promise<string> => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.src = base64Str;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 400;
+        const MAX_HEIGHT = 400;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', 0.8));
+      };
+    });
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setUser({ ...user, avatar: reader.result as string });
+      reader.onloadend = async () => {
+        const resized = await resizeImage(reader.result as string);
+        setUser({ ...user, avatar: resized });
       };
       reader.readAsDataURL(file);
     }
@@ -42,7 +75,11 @@ export const Profile = ({ user, setUser }: ProfileProps) => {
         name: user.name,
         blood_type: user.bloodType,
         rh_factor: user.rhFactor,
-        avatar_url: user.avatar
+        avatar_url: user.avatar,
+        height: user.height,
+        current_weight: user.currentWeight,
+        target_weight: user.targetWeight,
+        weeks_on_diet: user.weeksOnDiet
       })
       .eq('id', (await supabase.auth.getUser()).data.user?.id);
 
@@ -62,7 +99,7 @@ export const Profile = ({ user, setUser }: ProfileProps) => {
   };
 
   return (
-    <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-500 relative">
+    <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-500 relative pb-10">
       <Confetti active={showConfetti} />
       <h1 className="text-3xl font-bold">Perfil & Configurações</h1>
 
@@ -78,7 +115,7 @@ export const Profile = ({ user, setUser }: ProfileProps) => {
             <span className="material-icons-round text-white text-3xl">photo_camera</span>
           </div>
         </div>
-        <p className="text-sm text-slate-500 mt-2 font-medium">Toque para alterar foto</p>
+        <p className="text-sm text-slate-500 mt-2 font-medium">Toque na foto para alterar</p>
         <input 
           type="file" 
           ref={fileInputRef} 
@@ -130,11 +167,15 @@ export const Profile = ({ user, setUser }: ProfileProps) => {
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-bold text-slate-500 uppercase">Altura (cm)</label>
+            <label className="text-sm font-bold text-slate-500 uppercase">Altura</label>
             <input 
-              type="number" 
-              value={user.height}
-              onChange={(e) => handleChange('height', parseInt(e.target.value) || 0)}
+              type="text" 
+              value={user.height || ''}
+              onChange={(e) => {
+                const val = e.target.value.replace(',', '.');
+                handleChange('height', parseFloat(val) || 0);
+              }}
+              placeholder="Ex: 1.70 ou 1,70"
               className="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 focus:ring-primary focus:border-primary font-semibold"
             />
           </div>
@@ -148,6 +189,28 @@ export const Profile = ({ user, setUser }: ProfileProps) => {
               className="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-4 py-3 focus:ring-primary focus:border-primary font-semibold"
             />
           </div>
+        </div>
+      </div>
+
+      {/* Preferences Section */}
+      <div className="glass-card p-8 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 space-y-6">
+        <h2 className="text-xl font-bold border-b border-slate-100 dark:border-slate-800 pb-4">Preferências do App</h2>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className={`p-3 rounded-2xl ${darkMode ? 'bg-indigo-500/20 text-indigo-400' : 'bg-amber-100 text-amber-500'}`}>
+              <span className="material-icons-round">{darkMode ? 'dark_mode' : 'light_mode'}</span>
+            </div>
+            <div>
+              <p className="font-bold dark:text-white">Efeito Noturno</p>
+              <p className="text-xs text-slate-500">Alternar entre modo claro e escuro</p>
+            </div>
+          </div>
+          <button 
+            onClick={() => setDarkMode(!darkMode)}
+            className={`w-14 h-8 rounded-full relative transition-colors duration-300 ${darkMode ? 'bg-primary' : 'bg-slate-200 dark:bg-slate-700'}`}
+          >
+            <div className={`absolute top-1 w-6 h-6 rounded-full bg-white shadow-md transition-transform duration-300 ${darkMode ? 'translate-x-7' : 'translate-x-1'}`} />
+          </button>
         </div>
       </div>
 
@@ -190,13 +253,21 @@ export const Profile = ({ user, setUser }: ProfileProps) => {
             Atualize seu peso atual semanalmente para acompanhar sua evolução no gráfico da tela inicial.
           </p>
         </div>
-        <div className="flex justify-center pt-4">
+        <div className="flex flex-col gap-4 pt-4">
           <button 
             onClick={handleSave}
-            className="bg-gradient-to-r from-primary to-emerald-500 text-white px-8 py-4 rounded-full font-bold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center gap-2"
+            className="w-full bg-gradient-to-r from-primary to-emerald-500 text-white px-8 py-5 rounded-2xl font-black text-lg shadow-lg shadow-primary/20 hover:shadow-xl hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
           >
             <span className="material-icons-round">celebration</span>
             Salvar & Comemorar
+          </button>
+          
+          <button 
+            onClick={handleLogout}
+            className="w-full text-rose-500 font-bold py-3 hover:bg-rose-50 dark:hover:bg-rose-900/10 rounded-xl transition-colors flex items-center justify-center gap-2"
+          >
+            <span className="material-icons-round text-lg">logout</span>
+            Sair da Conta
           </button>
         </div>
       </div>

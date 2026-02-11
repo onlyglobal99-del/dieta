@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { RecipeCard } from '../components/RecipeCard';
 import { RecipeModal } from '../components/RecipeModal';
 import { Recipe, BloodType } from '../../types';
-import { supabase } from '../../src/lib/supabase';
+import { supabase } from '../lib/supabase';
 
 interface RecipeListProps {
   userBloodType: BloodType;

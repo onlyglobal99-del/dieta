@@ -66,8 +66,11 @@ function AppContent() {
             ...data,
             bloodType: data.blood_type || 'A',
             rhFactor: data.rh_factor || '+',
-            weeksOnDiet: 1,
-            currentWeight: 70,
+            weeksOnDiet: data.weeks_on_diet || 1,
+            currentWeight: data.current_weight || 70,
+            targetWeight: data.target_weight || 65,
+            height: data.height || 1.70,
+            avatar: data.avatar_url,
             role: data.role
           } as UserProfile & { role: string });
         } else {
@@ -80,7 +83,7 @@ function AppContent() {
             weeksOnDiet: 1,
             currentWeight: 70,
             targetWeight: 65,
-            height: 170,
+            height: 1.70,
             role: 'user',
             avatar: authUser.user_metadata?.avatar_url
           } as UserProfile & { role: string });
@@ -167,7 +170,7 @@ function AppContent() {
           />
         )}
         {tab === 'profile' && (
-           <Profile user={user} setUser={handleUserUpdate} />
+           <Profile user={user} setUser={handleUserUpdate} darkMode={darkMode} setDarkMode={setDarkMode} />
         )}
         {tab === 'stats' && (
            <Stats weightHistory={weightHistory} user={user} />
