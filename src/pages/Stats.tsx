@@ -50,16 +50,10 @@ export const Stats = ({ weightHistory, user }: StatsProps) => {
     <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-500">
       <h1 className="text-3xl font-bold">Sua Evolução</h1>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
+      <div className="grid grid-cols-3 gap-3 md:gap-6">
         <div className="glass-card p-4 md:p-6 rounded-3xl flex flex-col justify-between">
           <span className="text-slate-500 text-[9px] md:text-[10px] font-bold uppercase tracking-wider">Partida</span>
           <span className="text-xl md:text-2xl font-black text-slate-800 dark:text-white">{startWeight} <small className="text-[10px] font-normal text-slate-400 italic">kg</small></span>
-        </div>
-        <div className="glass-card p-4 md:p-6 rounded-3xl flex flex-col justify-between border-primary/20 bg-primary/5">
-          <span className="text-primary-dark text-[9px] md:text-[10px] font-bold uppercase tracking-wider">Eliminado</span>
-          <span className="text-xl md:text-2xl font-black text-primary">
-            {totalEliminated > 0 ? `-${totalEliminated.toFixed(1)}` : '0'} <small className="text-[10px] font-normal opacity-60 italic">kg</small>
-          </span>
         </div>
         <div className="glass-card p-4 md:p-6 rounded-3xl flex flex-col justify-between bg-primary/10 border-primary/20">
           <span className="text-primary-dark text-[9px] md:text-[10px] font-bold uppercase tracking-wider">Peso Atual</span>
@@ -118,12 +112,6 @@ export const Stats = ({ weightHistory, user }: StatsProps) => {
                                 <p className="text-white font-black text-xl leading-none">
                                     {weightValue} <small className="text-[10px] font-medium text-slate-500">kg</small>
                                 </p>
-                            </div>
-                            <div className="bg-emerald-500/10 border border-emerald-500/20 px-3 py-2 rounded-xl flex items-center justify-between gap-4">
-                                <span className="text-emerald-500 text-[10px] font-black uppercase">Eliminado</span>
-                                <span className="text-emerald-500 font-black text-sm">
-                                    {eliminatedValue > 0 ? `-${eliminatedValue.toFixed(1)}` : (eliminatedValue < 0 ? `+${Math.abs(eliminatedValue).toFixed(1)}` : '0')} kg
-                                </span>
                             </div>
                         </div>
                       </div>
